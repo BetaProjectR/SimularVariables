@@ -1,0 +1,113 @@
+---
+title: "Simular"
+author: "Jose Gallardo"
+date: "5/18/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Ejecute cada uno de los siguientes ejercicios en uno o más bloques de códigos diferentes. Sea ordenado y documente su reporte adecuadamente.
+
+RESUMEN
+Ejercicio 3
+ANOVA 1 VIA
+1 variable respuesta y un factor con 3 niveles.
++ comparaciones a posteriori
+
+Ejercicio 4
+ANOVA 1 VIA
+1 variable respuesta y un factor con 3 niveles.
++ comparaciones a posteriori
+
+Ejercicio 5
+ANOVA 2 VIAS
+1 variable respuesta y dos factores con interacción.
++ comparaciones a posteriori
+
+
+## DISTRIBUCIÓN DE MEDIA MUESTRAL
+
+Adaptado de: 
+© 2016 Angelo Santana & Carmen N. Hernández, Departamento de Matemáticas, ULPGC
+
+Variable: Peso del cuerpo pez
+
+Objetivo: No rechaza prueba de hipótesis
+
+**H~0~**: El peso medio de sus peces es igual a 1 Kg.
+
+Si **$\bar{X}$** = 1,1 Kg, rechaza la hipótesis? 
+
+```{r, , echo=FALSE, out.width = '70%' }
+mediaMuestral=function(n){
+  muestra=rnorm(n,1,1)
+  media=mean(muestra)
+  return(media)
+}
+m=10000
+muchasMedias100=replicate(m,mediaMuestral(100))
+
+hist(muchasMedias100,xlab="Media muestral", ylab="Frecuencia", col="lightcyan",
+     xlim=c(0.5,1.5),freq=FALSE,ylim=c(0,4),
+     main="Distribución medias muestrales", cex.lab = 1.5,
+     cex.axis = 1.5)
+curve(dnorm(x,1,sd(muchasMedias100)),xlim=c(0.5,1.5),col="blue",lwd=2,add=TRUE)
+abline(v=1 , col="red", lwd=3)
+abline(v=1.1, col="blue", lwd=3)
+```
+
+## DISTRIBUCIÓN DE MEDIA MUESTRAL
+
+Adaptado de: 
+© 2016 Angelo Santana & Carmen N. Hernández, Departamento de Matemáticas, ULPGC
+
+Variable: Peso del cuerpo pez
+
+Objetivo: Rechaza prueba de hipótesis
+
+**H~0~**: El peso medio de sus peces es igual a 1 Kg.
+ 
+Si **$\bar{X}$** = 1,2 Kg, rechaza la hipótesis?  
+
+```{r, echo=FALSE, out.width = '70%' }
+
+hist(muchasMedias100,xlab="Media muestral", ylab="Frecuencia", col="lightcyan",
+     xlim=c(0.5,1.5),freq=FALSE,ylim=c(0,4),
+     main="Distribución medias muestrales", cex.lab = 1.5,
+     cex.axis = 1.5)
+curve(dnorm(x,1,sd(muchasMedias100)),xlim=c(0.5,1.5),col="blue",lwd=2,add=TRUE)
+abline(v=1 , col="red", lwd=3)
+abline(v=1.2, col="blue", lwd=3)
+```
+
+## CORRELACIÓN DE DOS VARIABLES
+
+Variable: Dos variables estandarizadas X e Y
+
+Objetivo: Demostrar que al aumentar el N se puede rechazar una hipotesis nula de correlación, aun cuando esta seá muy pequeña 0,01.
+
+```{r, echo=FALSE, out.width = '80%' }
+gen.corr.data<- function(rho,n){
+# first step: generate two normal random variables from normal distrbution
+set.seed(123) 
+X <- rnorm(n)
+X2 <- rnorm(n)
+ 
+# second step generate the correlated variable
+ 
+Y<- rho*X + sqrt(1-rho^2)*X2
+result <-cbind(X,Y)
+return(result)
+}
+
+muestra<-gen.corr.data(0.01,50000)
+plot(muestra)
+dat<- as.data.frame(muestra)
+# cor.test(dat$x1, dat$x3)
+
+```
