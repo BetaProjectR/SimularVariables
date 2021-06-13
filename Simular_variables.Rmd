@@ -166,6 +166,9 @@ snp     <- rbinom(1000, 2, 0.4) # n (POPULATION), size (2 ALELLES) and prob (FRE
 w        <- rnorm(1000, w.means[factor(snp)], w.sd)
 snp.data <- data.frame(cbind(w, snp))
 
+# Export Simulate Data
+write.table(snp.data, file = "snp.data.csv", sep = ",", dec = ",")
+
 # Plot the phenotype as a funtion of genotupe
 library(ggplot2)
 p <- ggplot(snp.data, aes(x = factor(snp), y = w))
@@ -173,7 +176,7 @@ p + geom_point() + xlab("Reference allele count")
 
 # Lineal model
 par(mfrow=c(1,1)) 
-lm.qtl <- lm(w ~ snp)
+lm.qtl <- lm(w ~ -1 + factor(snp))
 plot(snp,w,main="")#inspeccion visual
 abline(lm(w~snp), cex=0.9, col="red")
 anova(lm.qtl)
