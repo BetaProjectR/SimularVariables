@@ -9,27 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
-Ejecute cada uno de los siguientes ejercicios en uno o más bloques de códigos diferentes. Sea ordenado y documente su reporte adecuadamente.
-
-RESUMEN
-Ejercicio 3
-ANOVA 1 VIA
-1 variable respuesta y un factor con 3 niveles.
-+ comparaciones a posteriori
-
-Ejercicio 4
-ANOVA 1 VIA
-1 variable respuesta y un factor con 3 niveles.
-+ comparaciones a posteriori
-
-Ejercicio 5
-ANOVA 2 VIAS
-1 variable respuesta y dos factores con interacción.
-+ comparaciones a posteriori
-
-
 ## DISTRIBUCIÓN DE MEDIA MUESTRAL
 
 Adaptado de: 
@@ -111,3 +90,93 @@ dat<- as.data.frame(muestra)
 # cor.test(dat$x1, dat$x3)
 
 ```
+
+## ANOVA 1 vía
+```{r}
+tilapia_cepas <- PlantGrowth
+names(tilapia_cepas) <- c("Peso", "Cepa")
+tilapia_cepas$Cepa <- factor(my_data$Cepa, 
+                             labels = c("Cepa 1", "Cepa2", "Cepa 3"))
+write.csv(tilapia_cepas, file = "tilapia_cepas.csv")
+```
+
+
+SIMULA DATOS CORRELACIONADOS
+
+```{r}
+
+library(MASS)
+args(mvrnorm)
+# Simulated Correlation between Body Weight, Color phenotypes in Atlantic salmon
+# Generate a set of means and a symmetric covariance matrix
+means   <- c(5500, 25)
+cov.mat <- matrix(c(800000, -300, -300, 4), nrow = 2, ncol = 2)
+WFE.COLOR <- data.frame(mvrnorm(949, means, cov.mat))
+# Give the data fram column headings
+names(WFE.COLOR) <- c("Weight", 'Color')
+WFE.COLOR[1:10, ]
+# Look at the mean and covariance to check the function
+colMeans(WFE.COLOR)
+cov(WFE.COLOR)
+cov(WFE.COLOR$Weight, WFE.COLOR$Color)
+cor(WFE.COLOR$Weight, WFE.COLOR$Color)
+# Plot and export the joint distribution of the variables
+p <- ggplot(WFE.COLOR, aes(x = Weight, y = Color))
+p + geom_point() + geom_smooth(method = "lm") +
+  xlab("Body Weight (g)") + ylab("Color")
+# Export Simulate Data
+write.table(WFE.COLOR, file = "CORR_WFE_COLOR_SALMON.csv", sep = ",", dec = ",")
+```
+
+
+```{r}
+library(readxl)
+library(survival)
+library(survminer)
+larv <- read_excel("surv_dat.xlsx", sheet = 1)
+summary(larv)
+larv$antibiotico <- as.factor(larv$antibiotico)
+str(larv)
+
+larv_fit <- survfit(Surv(stime,status)~strata(antibiotico),
+             data = larv, na.action=na.exclude, type="kaplan-meier")
+
+summary(larv_fit)
+
+surv_diff <- survdiff(Surv(stime,status)~antibiotico, data = larv)
+surv_diff
+
+ggsurvplot(survfit(Surv(stime,status) ~ antibiotico, data = larv, na.action = na.exclude, type="kaplan-meier"),
+pval = TRUE, conf.int = FALSE)
+
+```
+
+
+### Genotipo y fenotipo SNP-data
+
+```{r}
+
+# We can use rnorm to simulate a phenotype and QTL data
+w.means <- c(4000, 5000, 6000) # Complete dominance
+w.sd    <- 800
+# Generate a SNP. AF 0.4
+help(rbinom)
+snp     <- rbinom(1000, 2, 0.4) # n (POPULATION), size (2 ALELLES) and prob (FREQUENCY LOWER ALLELE)
+# Generate PHENO given the GENO and bind to data frame
+w        <- rnorm(1000, w.means[factor(snp)], w.sd)
+snp.data <- data.frame(cbind(w, snp))
+
+# Plot the phenotype as a funtion of genotupe
+library(ggplot2)
+p <- ggplot(snp.data, aes(x = factor(snp), y = w))
+p + geom_point() + xlab("Reference allele count")
+
+# Lineal model
+par(mfrow=c(1,1)) 
+lm.qtl <- lm(w ~ snp)
+plot(snp,w,main="")#inspeccion visual
+abline(lm(w~snp), cex=0.9, col="red")
+anova(lm.qtl)
+summary(lm.qtl)
+```
+
