@@ -167,7 +167,7 @@ w        <- rnorm(1000, w.means[factor(snp)], w.sd)
 snp.data <- data.frame(cbind(w, snp))
 
 # Export Simulate Data
-write.table(snp.data, file = "snp.data.csv", sep = ",", dec = ",")
+write.table(snp.data, file = "snp.data.csv", sep = ";", dec = ",")
 
 # Plot the phenotype as a funtion of genotupe
 library(ggplot2)
