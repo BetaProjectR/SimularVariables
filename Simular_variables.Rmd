@@ -184,20 +184,57 @@ summary(lm.qtl)
 
 ```
 
-## Simula modelo lineal multiple
+## Simula modelo lineal multiple para datos de acuicultura
 
 ```{r}
 library(psych)
+library(MASS)
+library(car)
 
-x=data.frame(matrix(rnorm(4*45),ncol=4))
-names(x)<-c('Noise','PC1','PC2', "PC3")
+set.seed(123)
+# Simulated Correlation between two QT
+n <- 100 # number of individuals
+means   <- c(50, 10) # salmon weight and fillet color
+cov.mat <- matrix(c(4, 3.2, 3.5, 3), nrow = 2, ncol = 2) # variance-covariance matrix
+pred_1.predic_2 <- data.frame(mvrnorm(n, means, cov.mat))
+names(pred_1.predic_2) <- c("pred_1", 'pred_2')
+pred_1.predic_2[1:10, ]
+# Look at the mean and covariance to check the function
+colMeans(pred_1.predic_2)
+cov(pred_1.predic_2)
+cor(pred_1.predic_2$pred_1, pred_1.predic_2$pred_2)
 
-beta<-c(-3,1,0.2,3) # these are the regression coefficients
 
-trait<- as.matrix(x)%*%beta + rnorm(nrow(x),0,1)
+x =data.frame(matrix(rnorm(2*100),ncol=2))
+x <- cbind(x,pred_1.predic_2$pred_1,pred_1.predic_2$pred_2)
+names(x)<-c('Pred_X1','Pred_X2','Pred_X3',"Pred_X4")
 
-l<-lm(trait~Noise+PC1+PC2+PC3,data=x)
+beta<-c(-4,4,0.2,4) # these are the regression coefficients
+
+trait_y <- as.matrix(x)%*%beta + rnorm(nrow(x),0,1)
+
+aqua_dat <- as.data.frame(trait_y,x)
+
+l<-lm(trait_y~Pred_X1+Pred_X2+Pred_X3+Pred_X4,data=x)
+
 summary(l)
 
+pairs.panels(x[1:4])
+
+# fish yield = Dias alimentación, densidad de siembra, peso de siembra, enfermedades.
+
+```
+
+
+```{r}
+set.seed(50)
+X2=rnorm(100,0,1)
+X3=rnorm(100,0,1)+(3.1*X2)
+Y= 2 + 0.5 * X2 + 0.1 * X3 + rnorm(100,0,0.4)
+lm1<- lm(Y~X2+X3)
+summary(lm1)
+sim_dat<-cbind(X2,X3)
+pairs.panels(sim_dat)
+vif(lm1)
 ```
 
