@@ -213,7 +213,7 @@ beta<-c(-4,4,0.2,4) # these are the regression coefficients
 
 trait_y <- as.matrix(x)%*%beta + rnorm(nrow(x),0,1)
 
-aqua_dat <- as.data.frame(trait_y,x)
+aqua_dat <- cbind(trait_y,x)
 
 l<-lm(trait_y~Pred_X1+Pred_X2+Pred_X3+Pred_X4,data=x)
 
@@ -224,6 +224,8 @@ pairs.panels(x[1:4])
 # fish yield = Dias alimentación, densidad de siembra, peso de siembra, enfermedades.
 
 vif(l)
+
+write.table(aqua_dat, file = "aqua_dat.csv", sep = ";", dec = ",")
 
 ```
 
