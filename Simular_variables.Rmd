@@ -181,5 +181,23 @@ plot(snp,w,main="")#inspeccion visual
 abline(lm(w~snp), cex=0.9, col="red")
 anova(lm.qtl)
 summary(lm.qtl)
+
+```
+
+## Simula modelo lineal multiple
+
+```{r}
+library(psych)
+
+x=data.frame(matrix(rnorm(4*45),ncol=4))
+names(x)<-c('Noise','PC1','PC2', "PC3")
+
+beta<-c(-3,1,0.2,3) # these are the regression coefficients
+
+trait<- as.matrix(x)%*%beta + rnorm(nrow(x),0,1)
+
+l<-lm(trait~Noise+PC1+PC2+PC3,data=x)
+summary(l)
+
 ```
 
