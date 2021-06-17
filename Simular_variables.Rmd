@@ -232,13 +232,41 @@ write.table(aqua_dat, file = "aqua_dat.csv", sep = ";", dec = ",")
 
 ```{r}
 set.seed(50)
-X2=rnorm(100,0,1)
-X3=rnorm(100,0,1)+(3.1*X2)
-Y= 2 + 0.5 * X2 + 0.1 * X3 + rnorm(100,0,0.4)
-lm1<- lm(Y~X2+X3)
+X1=rnorm(100,0,1)
+X2=rnorm(100,0,1)+(3.1*X1)
+Y= 2 + 0.5 * X1 + 0.1 * X2 + rnorm(100,0,0.4)
+lm1<- lm(Y~X1+X2)
+lm2<- lm(Y~X1)
 summary(lm1)
-sim_dat<-cbind(X2,X3)
+summary(lm2)
+sim_dat<-cbind(Y,X1,X2)
 pairs.panels(sim_dat)
+
 vif(lm1)
+pander::pander(head(sim_dat), caption = "Tabla de datos")
+
+pander::pander(vif(lm1), caption = "VIF")
+
+
+# Normalidad
+shapiro.test (residuals (lm1))
+plot(lm1, which = 2)
+
+# Homogeneidad de varianzas usando plot
+plot(lm1, which = 1)
+
+# Comparación usando residuales
+res <- anova(lm1, lm2)
+pander::pander(res, caption = "Comparación modelos usando residuales")
+
+# Comparación usando AIC
+aic <- AIC(lm1, lm2)
+
+pander::pander(aic, caption = "Comparación modelos usando AIC")
+
+# Comparación usando BIC
+bic <- BIC(lm1, lm2)
+
+pander::pander(bic, caption = "Comparación modelos usando BIC")
 ```
 
