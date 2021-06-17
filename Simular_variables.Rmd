@@ -195,7 +195,7 @@ set.seed(123)
 # Simulated Correlation between two QT
 n <- 100 # number of individuals
 means   <- c(50, 10) # salmon weight and fillet color
-cov.mat <- matrix(c(4, 3.2, 3.5, 3), nrow = 2, ncol = 2) # variance-covariance matrix
+cov.mat <- matrix(c(4, 3.35, 3.5, 3), nrow = 2, ncol = 2) # variance-covariance matrix
 pred_1.predic_2 <- data.frame(mvrnorm(n, means, cov.mat))
 names(pred_1.predic_2) <- c("pred_1", 'pred_2')
 pred_1.predic_2[1:10, ]
@@ -222,6 +222,8 @@ summary(l)
 pairs.panels(x[1:4])
 
 # fish yield = Dias alimentación, densidad de siembra, peso de siembra, enfermedades.
+
+vif(l)
 
 ```
 
