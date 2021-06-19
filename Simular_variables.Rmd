@@ -98,7 +98,18 @@ tilapia_cepas <- PlantGrowth
 names(tilapia_cepas) <- c("Peso", "Cepa")
 tilapia_cepas$Cepa <- factor(tilapia_cepas$Cepa, 
                              labels = c("Cepa 1", "Cepa2", "Cepa 3"))
+
+# Exporta datos simulados tilapia_cepas
+# a) Guarda el directorio actual
+old_wd <- getwd()
+
+# b) Va al directorio Datos_simulados
+setwd(paste0(getwd(),"/Datos_simulados"))
+
 write.csv(tilapia_cepas, file = "tilapia_cepas.csv")
+
+# c) Vuele al directorio principal
+setwd(old_wd)
 ```
 
 
@@ -152,8 +163,20 @@ cor(WFE.COLOR$Weight, WFE.COLOR$Color)
 p <- ggplot(WFE.COLOR, aes(x = Weight, y = Color))
 p + geom_point() + geom_smooth(method = "lm") +
   xlab("Body Weight (g)") + ylab("Color")
-# Export Simulate Data
-write.table(WFE.COLOR, file = "CORR_WFE_COLOR_SALMON.csv", sep = ",", dec = ",")
+
+# Exporta datos simulados cor_wfe_color
+# a) Guarda el directorio actual
+old_wd <- getwd()
+
+# b) Va al directorio Datos_simulados
+setwd(paste0(getwd(),"/Datos_simulados"))
+
+write.table(WFE.COLOR, file = "cor_wfe_color.csv", sep = ",", dec = ",")
+
+# c) Vuele al directorio principal
+setwd(old_wd)
+
+
 ```
 
 <div id='id6' />
@@ -196,8 +219,17 @@ snp     <- rbinom(1000, 2, 0.4) # n (POPULATION), size (2 ALELLES) and prob (FRE
 w        <- rnorm(1000, w.means[factor(snp)], w.sd)
 snp.data <- data.frame(cbind(w, snp))
 
-# Export Simulate Data
+# Exporta datos simulados snp.data
+# a) Guarda el directorio actual
+old_wd <- getwd()
+
+# b) Va al directorio Datos_simulados
+setwd(paste0(getwd(),"/Datos_simulados"))
+
 write.table(snp.data, file = "snp.data.csv", sep = ";", dec = ",")
+
+# c) Vuele al directorio principal
+setwd(old_wd)
 
 # Plot the phenotype as a funtion of genotupe
 library(ggplot2)
@@ -293,7 +325,19 @@ pairs.panels(x[1:4])
 
 vif(l)
 
+# Exporta datos simulados aqua_dat
+# a) Guarda el directorio actual
+old_wd <- getwd()
+
+# b) Va al directorio Datos_simulados
+setwd(paste0(getwd(),"/Datos_simulados"))
+
 write.table(aqua_dat, file = "aqua_dat.csv", sep = ";", dec = ",")
+
+# c) Vuele al directorio principal
+setwd(old_wd)
+
+
 
 ```
 
