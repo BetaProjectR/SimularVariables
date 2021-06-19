@@ -1,15 +1,39 @@
 ---
-title: "Simular"
-author: "Jose Gallardo"
-date: "5/18/2021"
+title: "Simular variables aleatorias"
+subtitle: 'Diplomado en Análisis de datos con R para la acuicultura'
+author:
+ name: Dr. José A. Gallardo y Dra. María Angélica Rueda.
+ affiliation: Pontificia Universidad Católica de Valparaíso
+ email: <jose.gallardo@pucv.cl>
+date: "`r format(Sys.time(), '%d %B %Y')`"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(MASS)
+library(psych)
+library(car)
 ```
 
-## DISTRIBUCIÓN DE MEDIA MUESTRAL
+## Introducción
+
+En el siguiente guía se simulan diversos set de datos y figuras con el propósito de ser utilizados en la enseñanza la Bioestadistica aplicada a la acuicultura. 
+
+**Índice**
+1. [Distribución media muestral: caso 1](#id1)
+2. [Distribución media muestral: caso 2](#id2)
+3. [Correlación entre dos variables: N = 50.000](#id3)
+4. [ANOVA 1 vía: Peso ~  cepas (Tilapia)](#id4)
+5. [Correlación Peso WFE y color filete (Salmón)](#id5)
+6. [Análisis de sobrevivencia con y sin antibióticos (Trucha)](#id6)
+7. [Regresión lineal simple: peso ~ genotipos (Salmon)](#id7)
+8. [Regresión lineal múltiple: 2 variables predictoras con multicolinealidad](#id8)
+
+<div id='id1' />
+## Distribución media muestral: caso 1
 
 Adaptado de: 
 © 2016 Angelo Santana & Carmen N. Hernández, Departamento de Matemáticas, ULPGC
@@ -40,7 +64,8 @@ abline(v=1 , col="red", lwd=3)
 abline(v=1.1, col="blue", lwd=3)
 ```
 
-## DISTRIBUCIÓN DE MEDIA MUESTRAL
+<div id='id2' />
+## Distribución media muestral: caso 2
 
 Adaptado de: 
 © 2016 Angelo Santana & Carmen N. Hernández, Departamento de Matemáticas, ULPGC
@@ -64,7 +89,8 @@ abline(v=1 , col="red", lwd=3)
 abline(v=1.2, col="blue", lwd=3)
 ```
 
-## CORRELACIÓN DE DOS VARIABLES
+<div id='id3' />
+## Correlación entre dos variables: N = 50.000
 
 Variable: Dos variables estandarizadas X e Y
 
@@ -87,25 +113,27 @@ return(result)
 muestra<-gen.corr.data(0.01,50000)
 plot(muestra)
 dat<- as.data.frame(muestra)
-# cor.test(dat$x1, dat$x3)
+cor.test(dat$X, dat$Y)
 
 ```
 
-## ANOVA 1 vía
+
+<div id='id4' />
+## ANOVA 1 vía: Peso ~  cepas (Tilapia)
+
 ```{r}
 tilapia_cepas <- PlantGrowth
 names(tilapia_cepas) <- c("Peso", "Cepa")
-tilapia_cepas$Cepa <- factor(my_data$Cepa, 
+tilapia_cepas$Cepa <- factor(tilapia_cepas$Cepa, 
                              labels = c("Cepa 1", "Cepa2", "Cepa 3"))
 write.csv(tilapia_cepas, file = "tilapia_cepas.csv")
 ```
 
 
-SIMULA DATOS CORRELACIONADOS
+<div id='id5' />
+## Correlación Peso WFE y color filete salmón del Atlántico
 
 ```{r}
-
-library(MASS)
 args(mvrnorm)
 # Simulated Correlation between Body Weight, Color phenotypes in Atlantic salmon
 # Generate a set of means and a symmetric covariance matrix
@@ -128,6 +156,8 @@ p + geom_point() + geom_smooth(method = "lm") +
 write.table(WFE.COLOR, file = "CORR_WFE_COLOR_SALMON.csv", sep = ",", dec = ",")
 ```
 
+<div id='id6' />
+## Análisis de sobrevivencia con y sin antibióticos
 
 ```{r}
 library(readxl)
@@ -151,8 +181,8 @@ pval = TRUE, conf.int = FALSE)
 
 ```
 
-
-### Genotipo y fenotipo SNP-data
+<div id='id7' />
+## Regresión lineal simple: peso ~ genotipos (Salmon)
 
 ```{r}
 
@@ -177,19 +207,59 @@ p + geom_point() + xlab("Reference allele count")
 # Lineal model
 par(mfrow=c(1,1)) 
 lm.qtl <- lm(w ~ -1 + factor(snp))
-plot(snp,w,main="")#inspeccion visual
+plot(snp,w,main="") #inspeccion visual
 abline(lm(w~snp), cex=0.9, col="red")
 anova(lm.qtl)
 summary(lm.qtl)
 
 ```
 
-## Simula modelo lineal multiple para datos de acuicultura
+<div id='id8' />
+## Regresión lineal múltiple: ejercicio clase.
 
 ```{r}
-library(psych)
-library(MASS)
-library(car)
+set.seed(50)
+X1=rnorm(100,0,1)
+X2=rnorm(100,0,1)+(3.1*X1)
+Y= 2 + 0.5 * X1 + 0.1 * X2 + rnorm(100,0,0.4)
+lm1<- lm(Y~X1+X2)
+lm2<- lm(Y~X1)
+summary(lm1)
+summary(lm2)
+sim_dat<-cbind(Y,X1,X2)
+pairs.panels(sim_dat)
+
+vif(lm1)
+pander::pander(head(sim_dat), caption = "Tabla de datos")
+
+pander::pander(vif(lm1), caption = "VIF")
+
+# Normalidad
+shapiro.test (residuals (lm1))
+plot(lm1, which = 2)
+
+# Homogeneidad de varianzas usando plot
+plot(lm1, which = 1)
+
+# Comparación usando residuales
+res <- anova(lm1, lm2)
+pander::pander(res, caption = "Comparación modelos usando residuales")
+
+# Comparación usando AIC
+aic <- AIC(lm1, lm2)
+
+pander::pander(aic, caption = "Comparación modelos usando AIC")
+
+# Comparación usando BIC
+bic <- BIC(lm1, lm2)
+
+pander::pander(bic, caption = "Comparación modelos usando BIC")
+```
+
+<div id='id9' />
+## Regresión lineal múltiple: ejercicio guía.
+
+```{r}
 
 set.seed(123)
 # Simulated Correlation between two QT
@@ -221,52 +291,10 @@ summary(l)
 
 pairs.panels(x[1:4])
 
-# fish yield = Dias alimentación, densidad de siembra, peso de siembra, enfermedades.
-
 vif(l)
 
 write.table(aqua_dat, file = "aqua_dat.csv", sep = ";", dec = ",")
 
 ```
 
-
-```{r}
-set.seed(50)
-X1=rnorm(100,0,1)
-X2=rnorm(100,0,1)+(3.1*X1)
-Y= 2 + 0.5 * X1 + 0.1 * X2 + rnorm(100,0,0.4)
-lm1<- lm(Y~X1+X2)
-lm2<- lm(Y~X1)
-summary(lm1)
-summary(lm2)
-sim_dat<-cbind(Y,X1,X2)
-pairs.panels(sim_dat)
-
-vif(lm1)
-pander::pander(head(sim_dat), caption = "Tabla de datos")
-
-pander::pander(vif(lm1), caption = "VIF")
-
-
-# Normalidad
-shapiro.test (residuals (lm1))
-plot(lm1, which = 2)
-
-# Homogeneidad de varianzas usando plot
-plot(lm1, which = 1)
-
-# Comparación usando residuales
-res <- anova(lm1, lm2)
-pander::pander(res, caption = "Comparación modelos usando residuales")
-
-# Comparación usando AIC
-aic <- AIC(lm1, lm2)
-
-pander::pander(aic, caption = "Comparación modelos usando AIC")
-
-# Comparación usando BIC
-bic <- BIC(lm1, lm2)
-
-pander::pander(bic, caption = "Comparación modelos usando BIC")
-```
 
