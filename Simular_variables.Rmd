@@ -30,7 +30,8 @@ En el siguiente guía se simulan diversos set de datos y figuras con el propósi
 5. [Correlación Peso WFE y color filete (Salmón)](#id5)
 6. [Análisis de sobrevivencia con y sin antibióticos (Trucha)](#id6)
 7. [Regresión lineal simple: peso ~ genotipos (Salmon)](#id7)
-8. [Regresión lineal múltiple: 2 variables predictoras con multicolinealidad](#id8)
+8. [Regresión lineal múltiple: ejemplo para clase](#id8)
+9. [Regresión lineal múltiple: ejercicio guía](#id8)
 
 <div id='id1' />
 ## Distribución media muestral: caso 1
@@ -215,7 +216,7 @@ summary(lm.qtl)
 ```
 
 <div id='id8' />
-## Regresión lineal múltiple: ejercicio clase.
+## Regresión lineal múltiple: ejemplo para clase.
 
 ```{r}
 set.seed(50)
