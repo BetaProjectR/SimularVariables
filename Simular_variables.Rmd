@@ -16,6 +16,7 @@ library(ggplot2)
 library(MASS)
 library(psych)
 library(car)
+library(lme4)
 ```
 
 ## Introducción
@@ -31,7 +32,8 @@ En el siguiente proyecto se simulan diversos set de datos y figuras con el prop�
 6. [Análisis de sobrevivencia con y sin antibióticos (Trucha)](#id6)    
 7. [Regresión lineal simple: peso ~ genotipos (Salmon)](#id7)    
 8. [Regresión lineal múltiple: ejemplo para clase](#id8)   
-9. [Regresión lineal múltiple: ejercicio guía](#id8)  
+9. [Regresión lineal múltiple: ejercicio guía](#id9)
+10.[Modelo mixto: weight ~  diet + time + animal_random (Tilapia): ejercicio clase](#id10)
 
 <div id='id1' />
 ## Distribución media muestral: caso 1
@@ -341,4 +343,60 @@ setwd(old_wd)
 
 ```
 
+<div id='id110' />
+## Modelo mixto: weight ~  time + diet + animal_random (Tilapia): ejercicio clase
+
+```{r}
+tilapia_diet <- ChickWeight
+names(tilapia_diet) <- c("weight", "time", "animal", "diet")
+
+# Exporta datos simulados tilapia_cepas
+# a) Guarda el directorio actual
+old_wd <- getwd()
+
+# b) Va al directorio Datos_simulados
+setwd(paste0(getwd(),"/Datos_simulados"))
+
+write.csv(tilapia_diet, file = "tilapia_diet.csv")
+
+# c) Vuele al directorio principal
+setwd(old_wd)
+
+```
+
+## Exploratorio tilapia - diet
+```{r}
+
+ggplot(data = tilapia_diet,aes(x= as.factor(time),y = weight, fill=time)) +
+geom_boxplot() + theme(legend.position = 'none')
+
+p <- ggplot(data = tilapia_diet,aes(x = time,y = weight))
+p + geom_point(aes(colour = diet)) + stat_smooth(se = FALSE)
+
+p + geom_point(aes(colour = diet)) + stat_smooth(aes(colour = diet),
+method = 'lm',size = 1.2,se = FALSE)
+
+ggplot(data = tilapia_diet,aes(x = time,y = weight,colour = animal,group = animal)) +
+geom_line() + facet_grid(~diet) + theme(legend.position = 'none')
+
+```
+## Comparacion modelos tilapia - diet
+
+```{r}
+# diferente intercepto, misma pendiente
+mod.1 <- lm(weight ~ diet + time, data = tilapia_diet)
+
+# mismo intercepto, diferente pendiente
+mod.2 <- lm(weight ~ diet:time, data = tilapia_diet)
+
+# diferente intercepto, misma pendiente + aleatorio
+mod.1r <- lmer(weight~diet + time + (1|animal),tilapia_diet)
+
+# diferente intercepto, diferente pendiente + aleatorio
+mod.2r <- lmer(weight~diet + time + (time|animal),tilapia_diet)
+
+anova(mod.1r, mod.2r)
+anova(mod.1, mod.2)
+
+```
 
