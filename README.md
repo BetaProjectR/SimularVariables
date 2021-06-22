@@ -1,4 +1,4 @@
-## Simulación de variables aleatorias para acuicultura
+## Simulación de variables aleatorias para acuicultura.
 
 ## Introducción
 
